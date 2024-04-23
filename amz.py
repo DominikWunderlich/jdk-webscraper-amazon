@@ -10,7 +10,8 @@ class Reviews:
 
     # This Method will give us every review from a Site
     def pagination(self, page):
-        r = self.session.get(self.url + str(page))
+        url_with_page = f"{self.url}&pageNumber{page}"
+        r = self.session.get(url_with_page)
         r.html.render(sleep=1)
         reviews = r.html.find('div[data-hook=review]')
         if not reviews:
@@ -39,14 +40,14 @@ class Reviews:
 
 
 if __name__ == '__main__':
-    url = f"https://www.amazon.de/Foodoko-Finest-Balsamico-Geschenkset-Fläschchen/product-reviews/B09C5ZS1WM/ref=cm_cr_arp_d_paging_btm_next_2?ie=UTF8&reviewerType=all_reviews&pageNumber=1&sortBy=recent"
+    url = f"https://www.amazon.de/Foodoko-Finest-Balsamico-Geschenkset-Fläschchen/product-reviews/B09C5ZS1WM/ref=cm_cr_arp_d_paging_btm_next_2?ie=UTF8&reviewerType=all_reviews"
     amz = Reviews(url)
     results = []
-    for x in range(1,5):
+    for x in range(1,3): # Enter how many pages of reviews there are.
         print('getting page', x)
         time.sleep(0.3)
         reviews = amz.pagination(x)
-        if reviews is not False:
+        if reviews:
             results.append(amz.parse(reviews))
         else:
             print("No more pages left!")
@@ -55,4 +56,4 @@ if __name__ == '__main__':
     amz.save(results)
 
 
-# TODO: Pagination does not work. Need to fix the "pageNumber" in Link.
+# TODO: Pagination does not work.
